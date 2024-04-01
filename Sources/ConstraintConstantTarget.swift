@@ -27,49 +27,88 @@
     import AppKit
 #endif
 
-
 public protocol ConstraintConstantTarget {
+    func asFloat() -> CGFloat?
+    func asSize() -> CGSize?
+    func asPoint() -> CGPoint?
+    func asConstraintInsets() -> ConstraintInsets?
+
+#if canImport(UIKit)
+    func asConstraintDirectionalInsets() -> ConstraintDirectionalInsets?
+#endif
 }
 
 extension CGPoint: ConstraintConstantTarget {
+    public func asFloat() -> CGFloat? {
+        nil
+    }
+    public func asSize() -> CGSize? {
+        return nil
+    }
+    public func asPoint() -> CGPoint? {
+        return self
+    }
+    public func asConstraintInsets() -> ConstraintInsets? {
+        return nil
+    }
+#if canImport(UIKit)
+    public func asConstraintDirectionalInsets() -> ConstraintDirectionalInsets? {
+        return nil
+    }
+#endif
 }
 
-extension CGSize: ConstraintConstantTarget {    
+extension CGSize: ConstraintConstantTarget {
+    public func asFloat() -> CGFloat? {
+        nil
+    }
+    public func asSize() -> CGSize? {
+        return self
+    }
+    public func asPoint() -> CGPoint? {
+        return nil
+    }
+    public func asConstraintInsets() -> ConstraintInsets? {
+        return nil
+    }
+#if canImport(UIKit)
+    public func asConstraintDirectionalInsets() -> ConstraintDirectionalInsets? {
+        return nil
+    }
+#endif
 }
 
-extension ConstraintInsets: ConstraintConstantTarget {
-}
+extension ConstraintInsets: ConstraintConstantTarget {}
 
 #if canImport(UIKit)
 @available(iOS 11.0, tvOS 11.0, *)
 extension ConstraintDirectionalInsets: ConstraintConstantTarget {
+    public func asFloat() -> CGFloat? {
+        nil
+    }
+    public func asSize() -> CGSize? {
+        return nil
+    }
+    public func asPoint() -> CGPoint? {
+        return nil
+    }
+    public func asConstraintInsets() -> ConstraintInsets? {
+        return nil
+    }
+    public func asConstraintDirectionalInsets() -> ConstraintDirectionalInsets? {
+        return self
+    }
 }
 #endif
 
 extension ConstraintConstantTarget {
-    
+
     internal func constraintConstantTargetValueFor(layoutAttribute: LayoutAttribute) -> CGFloat {
-        if let value = self as? CGFloat {
+        if let value = self.asFloat() {
             return value
         }
-        
-        if let value = self as? Float {
-            return CGFloat(value)
-        }
-        
-        if let value = self as? Double {
-            return CGFloat(value)
-        }
-        
-        if let value = self as? Int {
-            return CGFloat(value)
-        }
-        
-        if let value = self as? UInt {
-            return CGFloat(value)
-        }
-        
-        if let value = self as? CGSize {
+
+        if let value = self.asSize() {
             if layoutAttribute == .width {
                 return value.width
             } else if layoutAttribute == .height {
@@ -78,8 +117,8 @@ extension ConstraintConstantTarget {
                 return 0.0
             }
         }
-        
-        if let value = self as? CGPoint {
+
+        if let value = self.asPoint() {
             #if canImport(UIKit)
                 switch layoutAttribute {
                 case .left, .right, .leading, .trailing, .centerX, .leftMargin, .rightMargin, .leadingMargin, .trailingMargin, .centerXWithinMargins:
@@ -108,8 +147,8 @@ extension ConstraintConstantTarget {
             }
             #endif
         }
-        
-        if let value = self as? ConstraintInsets {
+
+        if let value = self.asConstraintInsets(){
             #if canImport(UIKit)
                 switch layoutAttribute {
                 case .left, .leftMargin:
@@ -170,9 +209,9 @@ extension ConstraintConstantTarget {
             }
             #endif
         }
-        
+
         #if canImport(UIKit)
-            if #available(iOS 11.0, tvOS 11.0, *), let value = self as? ConstraintDirectionalInsets {
+            if #available(iOS 11.0, tvOS 11.0, *), let value = self.asConstraintDirectionalInsets() {
                 switch layoutAttribute {
                 case .left, .leftMargin:
                   return (ConstraintConfig.interfaceLayoutDirection == .leftToRight) ? value.leading : value.trailing
@@ -209,5 +248,5 @@ extension ConstraintConstantTarget {
 
         return 0.0
     }
-    
+
 }
