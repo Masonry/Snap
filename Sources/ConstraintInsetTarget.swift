@@ -157,7 +157,7 @@ extension ConstraintInsetTarget {
         if let amount = self.asConstraintInsets() {
             return amount
         } else if let amount = self.asFloat() {
-            return ConstraintInsets(top: CGFloat(amount), left: CGFloat(amount), bottom: CGFloat(amount), right: CGFloat(amount))
+            return ConstraintInsets(top: amount, left: amount, bottom: amount, right: amount)
         } else {
             return ConstraintInsets(top: 0, left: 0, bottom: 0, right: 0)
         }
